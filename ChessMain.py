@@ -55,6 +55,11 @@ def main():
                     sqSelected = () #reset user clicks
                     playerClicks = []
 
+            #key clicks
+            elif e.type == p.KEYDOWN:
+                if e.key == p.K_z: #z to undo move
+                    gs.UndoMove()
+
             clock.tick(MAX_FPS)
             p.display.flip()
             drawGameState(screen, gs)
