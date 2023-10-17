@@ -138,29 +138,44 @@ class GameState():
         return moves
 
     def getPawnMoves(self, r, c, moves):
+        piecePinned = False
+        pinDirection = ()
+        for i in range(len(self.pins)-1, -1, -1):
+            if self.pins[i][0] == r and self.pins[i][1] == c:
+                piecePinned = True
+                pinDirection = (self.pins[i][2] and self.pins[i][3])
+                self.pins.remove(self.pins[i])
+                break
+
         if self.whiteToMove:
             if self.board[r-1][c] == "--":
-                moves.append(Move((r, c), (r-1, c), self.board))
-                if r == 6 and self.board[r-2][c] == "--":
-                    moves.append(Move((r, c), (r-2, c), self.board))
+                if not piecePinned or pinDirection == (-1, 0):
+                    moves.append(Move((r, c), (r-1, c), self.board))
+                    if r == 6 and self.board[r-2][c] == "--":
+                        moves.append(Move((r, c), (r-2, c), self.board))
             if c-1 >= 0:
-                if self.board[r-1][c-1][0] == 'b': #enemy piece to capture
-                    moves.append(Move((r, c), (r - 1, c-1), self.board))
+                if self.board[r-1][c-1][0] == 'b':#enemy piece to capture
+                    if not piecePinned or pinDirection == (-1, -1):
+                        moves.append(Move((r, c), (r - 1, c-1), self.board))
             if c+1 <= 7:   #captures to the right
                 if self.board[r - 1][c + 1][0] == 'b':  # enemy piece to capture
-                    moves.append(Move((r, c), (r - 1, c + 1), self.board))
+                    if not piecePinned or pinDirection == (-1, 1):
+                        moves.append(Move((r, c), (r - 1, c + 1), self.board))
 
         else:
             if self.board[r + 1][c] == "--":
-                moves.append(Move((r, c), (r + 1, c), self.board))
-                if r == 1 and self.board[r+2][c] == "--":
-                    moves.append(Move((r, c), (r+2, c), self.board))
+                if not piecePinned or pinDirection == (1, 0):
+                    moves.append(Move((r, c), (r + 1, c), self.board))
+                    if r == 1 and self.board[r+2][c] == "--":
+                        moves.append(Move((r, c), (r+2, c), self.board))
             if c-1 >= 0:
                 if self.board[r+1][c-1][0] == "w":
-                    moves.append(Move((r, c), (r+1, c-1), self.board))
+                    if not piecePinned or pinDirection == (1, -1):
+                        moves.append(Move((r, c), (r+1, c-1), self.board))
             if c+1 <= 7:
                 if self.board[r+1][c+1][0] == "w":
-                    moves.append(Move((r, c), (r+1, c+1), self.board))
+                    if not piecePinned or pinDirection == (1, 1):
+                        moves.append(Move((r, c), (r+1, c+1), self.board))
 
     def checkForPinsAndChecks(self):
         pins = []
